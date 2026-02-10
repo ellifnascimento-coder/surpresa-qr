@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Experimento suspeito</title>
+
+<style>
+/* =========================
+   🎨 PERSONALIZAÇÃO RÁPIDA
+   ========================= */
+
+:root{
+  --bg: #0f0f14;        /* cor fundo */
+  --text: #ffffff;      /* cor texto */
+  --btn: #7c3aed;       /* cor botão */
+  --btn-text: #ffffff;
+}
+
+/* ========================= */
+
+body{
+  margin:0;
+  font-family: monospace;
+  background: var(--bg);
+  color: var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  text-align:center;
+  padding:20px;
+}
+
+.card{
+  max-width:500px;
+}
+
+button{
+  margin-top:30px;
+  padding:14px 28px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  background:var(--btn);
+  color:var(--btn-text);
+  cursor:pointer;
+}
+
+.small{
+  font-size:12px;
+  opacity:0.6;
+  margin-top:10px;
+}
+
+img{
+  max-width:100%;
+  margin-top:20px;
+  border-radius:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="content"></div>
+  <button id="btn">seguir mesmo assim</button>
+</div>
+
+<script>
+const steps = [
+
+`você acabou de escanear um QR Code.<br><br>isso já diz muito sobre você.<br><br>não tem volta.`,
+
+`coletando dados...<br>• surpresa: OK<br>• confusão: OK<br>• julgamento silencioso: 99%`,
+
+`carregando conteúdo de baixa qualidade...<br><br>▓▓▓▓▓▓▓░░ 78%`,
+
+`erros detectados:<br>• QR Code em flores<br>• essa página<br>• você ainda aqui`,
+
+`aviso:<br><br>isso NÃO é um flerte.<br>talvez seja.<br>não temos certeza.`,
+
+`PAUSA OBRIGATÓRIA.<br>respire fundo...<br><br><div class="small">*observação irrelevante: eu sou meio apaixonado por você</div>`,
+
+`aviso:<br>nada aqui faz sentido.<br><br>tente clicar no botão 😈`,
+
+`parabéns.<br>você chegou até o final.<br><br>sua recompensa foi carregada.`
+
+];
+
+let step = 0;
+const content = document.getElementById("content");
+const btn = document.getElementById("btn");
+
+content.innerHTML = steps[0];
+
+btn.onclick = () => {
+
+  if(step === 6){
+    fugirBotao();
+    return;
+  }
+
+  step++;
+
+  if(step < steps.length){
+    content.innerHTML = steps[step];
+  }else{
+    mostrarShrek();
+  }
+};
+
+
+function fugirBotao(){
+  let tentativas = 0;
+
+  btn.onmouseover = () => {
+    tentativas++;
+    btn.style.position = "absolute";
+    btn.style.left = Math.random()*80+"%";
+    btn.style.top = Math.random()*80+"%";
+
+    if(tentativas >= 4){
+      alert("JÁ PERDEU A PACIÊNCIA?");
+      btn.onmouseover = null;
+      btn.style.position="static";
+      step++;
+      content.innerHTML = steps[step];
+    }
+  }
+}
+
+
+function mostrarShrek(){
+  document.body.innerHTML = `
+    <video autoplay controls style="width:100%;height:100vh;object-fit:cover">
+      <source src="https://media.tenor.com/0ygiqFa0-4QAAAAC/shrek-dance.mp4" type="video/mp4">
+    </video>
+  `;
+}
+</script>
+
+</body>
+</html>
