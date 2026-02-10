@@ -165,25 +165,42 @@ setTimeout(()=>{j.innerHTML="julgamento silencioso: PROVÁVEL"; j.classList.remo
 }
 
 /* =============================
-   ETAPA 3 – barra real
+   ETAPA 3 – barra real + %
 ============================= */
 function etapa3(){
 
 content.innerHTML=`
-carregando conteúdo de baixa qualidade...
-<div class="progress"><div class="bar" id="bar"></div></div>
+carregando conteúdo de baixa qualidade...<br><br>
+
+<div class="progress">
+  <div class="bar" id="bar"></div>
+</div>
+
+<div id="percent" style="margin-top:10px; opacity:.7">
+0%
+</div>
 `;
 
 setButton("aceitar termos que não li", etapa4);
 
 let width=0;
+
 const bar=document.getElementById("bar");
+const percent=document.getElementById("percent");
 
 let interval=setInterval(()=>{
-  width+=3;
-  bar.style.width=width+"%";
-  if(width>=100) clearInterval(interval);
-},60);
+
+  width += 2;
+
+  bar.style.width = width + "%";
+  percent.innerText = width + "%";
+
+  if(width >= 100){
+    clearInterval(interval);
+    percent.innerText = "100% ✓";
+  }
+
+}, 40);
 
 }
 
