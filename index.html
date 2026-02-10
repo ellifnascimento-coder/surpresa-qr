@@ -271,35 +271,47 @@ setButton("seguir mesmo assim", etapa2);
 /* =============================
    ETAPA 2 – piscando + SOM
 ============================= */
+function etapa2(){
+
+content.innerHTML = `
+coletando dados...<br><br>
+<span id="s">surpresa: ...</span><br>
+<span id="c">confusão: ...</span><br>
+<span id="j">julgamento silencioso: ...</span>
+`;
+
+setButton("prosseguir", etapa3);
+
+const s=document.getElementById("s");
+const c=document.getElementById("c");
+const j=document.getElementById("j");
+
 function piscar(el, textoFinal, delay, freq){
 
   setTimeout(()=>{
 
     el.classList.add("blink");
 
-    // 🔊 som repetindo enquanto pisca
     const som = setInterval(()=>{
       beep(freq, 60);
     }, 120);
 
-    // tempo total piscando
     setTimeout(()=>{
-
-      clearInterval(som); // para som
+      clearInterval(som);
       el.classList.remove("blink");
       el.textContent = textoFinal;
-
-      beep(freq+200, 120); // bip final de confirmação
-
-    }, 700);
+      beep(freq+200,120);
+    },700);
 
   }, delay);
 }
+
 piscar(s,"surpresa: OK",600,900);
 piscar(c,"confusão: OK",1400,650);
 piscar(j,"julgamento silencioso: PROVÁVEL",2200,450);
 
 }
+
 
 /* =============================
    ETAPA 3 – barra real + % VISÍVEL
