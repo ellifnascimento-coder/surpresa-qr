@@ -140,7 +140,6 @@ function beep(freq=700, duration=80){
   osc.stop(ctx.currentTime + duration/1000);
 }
 
-
 /* =============================
    FUNÇÃO BOTÃO PADRÃO
 ============================= */
@@ -181,25 +180,21 @@ const s=document.getElementById("s");
 const c=document.getElementById("c");
 const j=document.getElementById("j");
 
-function piscar(el, texto, delay, freq){
-
+function piscar(el, texto, delay){
   setTimeout(()=>{
-
     el.classList.add("blink");
-    beep(freq,120);
 
     setTimeout(()=>{
-      el.innerHTML = texto;
+      el.textContent = texto;
       el.classList.remove("blink");
-    },500);
+    },400);
 
-  }, delay);
+  },delay);
 }
 
-piscar(s,"surpresa: OK",500,800);
-piscar(c,"confusão: OK",1400,650);
-piscar(j,"julgamento silencioso: PROVÁVEL",2300,500);
-
+piscar(s,"surpresa: OK",600);
+piscar(c,"confusão: OK",1400);
+piscar(j,"julgamento silencioso: PROVÁVEL",2200);
 }
 
 /* =============================
@@ -214,39 +209,32 @@ carregando conteúdo de baixa qualidade...<br><br>
   <div class="bar" id="bar"></div>
 </div>
 
-<div id="percent" style="
-  margin-top:12px;
-  font-size:18px;
-  font-weight:bold;
-">
+<div id="percent" style="margin-top:15px;font-size:20px;font-weight:bold">
 0%
 </div>
 `;
+
+buttons.innerHTML="";
 
 const bar=document.getElementById("bar");
 const percent=document.getElementById("percent");
 
 let width=0;
 
-/* botão só aparece no final (melhor UX) */
-buttons.innerHTML="";
-
-let interval=setInterval(()=>{
+const interval=setInterval(()=>{
 
   width++;
 
-  bar.style.width = width + "%";
-  percent.innerText = width + "%";
+  bar.style.width = width+"%";
+  percent.textContent = width+"%";
 
   if(width>=100){
     clearInterval(interval);
-
-    percent.innerText="100% ✓";
-
+    percent.textContent="100% ✓";
     setButton("aceitar termos que não li", etapa4);
   }
 
-}, 25);
+},20);
 
 }
 
@@ -338,45 +326,47 @@ function etapa7(){
 content.innerHTML=`
 aviso:<br>
 nada aqui faz sentido.<br>
-mas você clicou em continuar.<br>
-então a curiosidade venceu.
+a curiosidade venceu.
 `;
 
 buttons.innerHTML="";
 
 const sim=document.createElement("button");
-sim.innerText="sim";
+sim.innerText="continuar";
 
 const nao=document.createElement("button");
-nao.innerText="não";
+nao.innerText="parar";
 
 buttons.appendChild(sim);
 buttons.appendChild(nao);
 
 let fugidas=0;
 
-/* ========= SIM ========= */
-sim.onclick = ()=>{
-  mostrarSabia();
-};
-
-
-/* ========= NÃO fugindo ========= */
-nao.onmouseover = ()=>{
+/* CONTINUAR fugindo */
+sim.onmouseover = ()=>{
 
   fugidas++;
 
-  nao.style.position="absolute";
-  nao.style.left=Math.random()*80+"%";
-  nao.style.top=Math.random()*80+"%";
+  sim.style.position="absolute";
+  sim.style.left=Math.random()*80+"%";
+  sim.style.top=Math.random()*80+"%";
 
-  if(fugidas>=10){
-    nao.remove();
+  if(fugidas>=5){
+    const perdeu = confirm("já perdeu a paciência?");
+    
+    if(!perdeu){
+      content.innerHTML += `<br><br><small style="opacity:.5">para de mentir pra si mesma.</small>`;
+      return;
+    }
 
-    content.innerHTML += `<br><br><small style="opacity:.5">para de mentir pra si mesma.</small>`;
+    mostrarSabia();
   }
 };
 
+/* PARAR normal */
+nao.onclick = ()=>{
+  content.innerHTML += `<br><br><small style="opacity:.5">para de mentir pra si mesma.</small>`;
+};
 }
 
 /* =============================
@@ -410,9 +400,15 @@ setButton("ver conclusão", mostrarShrek);
 ============================= */
 function mostrarShrek(){
 document.body.innerHTML=`
-<video autoplay controls style="width:100vw;height:100vh;object-fit:cover">
-<source src="https://media.tenor.com/0ygiqFa0-4QAAAAC/shrek-dance.mp4">
-</video>`;
+<iframe
+  width="100%"
+  height="100%"
+  src="https://www.youtube.com/embed/_2aN_aXrQsw?autoplay=1"
+  frameborder="0"
+  allow="autoplay; fullscreen"
+  allowfullscreen
+></iframe>
+`;
 }
 
 etapa1();
