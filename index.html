@@ -1,24 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>carregando surpresa...</title>
 
 <style>
-/* =====================
-   🎨 PERSONALIZAÇÃO
-   ===================== */
-
 :root{
   --bg:#0f0f14;
-  --text:#ffffff;
-  --btn:#2196f3; /* 🔵 AZUL */
-  --btn-text:#fff;
+  --text:#fff;
+  --btn:#2196f3;
 }
-
-/* ===================== */
 
 body{
   margin:0;
@@ -29,82 +22,53 @@ body{
   justify-content:center;
   align-items:center;
   height:100vh;
-  overflow:hidden;
   text-align:center;
+  overflow:hidden;
 }
 
-.card{
-  max-width:520px;
-}
-
-.floating{
-  position:fixed; /* 🔥 em vez de absolute */
-  font-size:11px;
-  opacity:.15;
-  pointer-events:none;
-  white-space:nowrap;
-}
+.card{max-width:520px}
 
 button{
-  margin-top:30px;
-  padding:14px 28px;
+  margin-top:25px;
+  padding:12px 26px;
+  border-radius:10px;
   border:none;
-  border-radius:12px;
-  font-size:16px;
   background:var(--btn);
-  color:var(--btn-text);
+  color:#fff;
   cursor:pointer;
-  transition:.2s;
 }
 
-button:hover{
-  transform:scale(1.05);
-}
-
-/* loading piscando */
-.blink{
-  animation:blink 0.8s infinite;
-}
-@keyframes blink{
-  50%{opacity:.3}
-}
-
-/* barra real */
 .progress{
-  width:100%;
   height:16px;
   background:#333;
   border-radius:10px;
-  margin-top:20px;
   overflow:hidden;
+  margin-top:20px;
 }
+
 .bar{
   height:100%;
   width:0%;
   background:#2196f3;
-  transition:.2s;
 }
 
-/* tela erro */
 .error{
-  font-family: monospace;
   color:#ff5555;
-  text-align:left;
   white-space:pre-line;
+  text-align:left;
 }
 
-/* textos pequenos espalhados */
 .floating{
-  position:absolute;
+  position:fixed;
   font-size:11px;
-  opacity:.25;
+  opacity:.2;
+  pointer-events:none;
 }
-
 </style>
 </head>
 
 <body>
-<div class="card" id="card">
+<div class="card">
   <div id="content"></div>
   <div id="buttons"></div>
 </div>
@@ -112,186 +76,125 @@ button:hover{
 <script>
 const content = document.getElementById("content");
 const buttons = document.getElementById("buttons");
-const card = document.getElementById("card");
 
-let step = 0;
+/* =====================================================
+   🔊 ÁUDIOS LOCAIS
+===================================================== */
 
-/* ========= SOM GLOBAL ========= */
-let audioCtx;
+const audioEtapa1 = new Audio("etapa1.mp3");
+const audioEtapa5 = new Audio("etapa5.mp3");
 
-function getCtx(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  return audioCtx;
+audioEtapa5.loop = true;
+
+function play1(){ audioEtapa1.currentTime=0; audioEtapa1.play(); }
+function stop1(){ audioEtapa1.pause(); }
+
+function play5(){ audioEtapa5.currentTime=0; audioEtapa5.play(); }
+function stop5(){ audioEtapa5.pause(); }
+
+/* =====================================================
+   BEEP + ERRO
+===================================================== */
+
+let ctx;
+function beep(freq=700,d=80){
+  if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const o=ctx.createOscillator();
+  const g=ctx.createGain();
+  o.frequency.value=freq;
+  g.gain.value=.05;
+  o.connect(g);
+  g.connect(ctx.destination);
+  o.start();
+  o.stop(ctx.currentTime+d/1000);
 }
 
-function beep(freq=700, duration=80){
-
-  const ctx = getCtx();
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type="square";
-  osc.frequency.value=freq;
-
-  gain.gain.value=0.05;
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start();
-  osc.stop(ctx.currentTime + duration/1000);
-}
-
-/* erro glitch */
 function errorNoise(){
-  for(let i=0;i<7;i++){
-    setTimeout(()=>beep(150+Math.random()*200,60), i*70);
+  for(let i=0;i<8;i++){
+    setTimeout(()=>beep(150+Math.random()*250,60), i*70);
   }
 }
-   
-/* ========= TOCAR 15s DO YOUTUBE ========= */
 
-let ytFrame = null;
-let ytInterval = null;
+/* =====================================================
+   AUX
+===================================================== */
 
-function tocarMusica15s(){
-
-  // remove se já existir
-  if(ytFrame) ytFrame.remove();
-
-  ytFrame = document.createElement("iframe");
-
-  ytFrame.src =
-    "https://www.youtube.com/embed/izGwDsrQ1eQ?autoplay=1&start=0&controls=0";
-
-  ytFrame.style.position="fixed";
-  ytFrame.style.width="1px";
-  ytFrame.style.height="1px";
-  ytFrame.style.opacity="0";
-  ytFrame.style.pointerEvents="none";
-
-  document.body.appendChild(ytFrame);
-
-  // para após 15s
-  setTimeout(()=>{
-    if(ytFrame) ytFrame.remove();
-  },15000);
-}
-
-/* repetir a cada 15 minutos */
-function iniciarLoopMusica(){
-
-  tocarMusica15s();
-
-  if(ytInterval) clearInterval(ytInterval);
-
-  ytInterval = setInterval(()=>{
-    tocarMusica15s();
-  }, 15 * 60 * 1000); // 15 minutos
-}
-
-   /* ========= MUSICA INTRO 57s ========= */
-let introFrame = null;
-
-function tocarIntro57s(){
-
-  if(introFrame) introFrame.remove();
-
-  introFrame = document.createElement("iframe");
-
-  introFrame.src =
-    "https://www.youtube.com/embed/YMmDtydK-L0?autoplay=1&controls=0";
-
-  introFrame.style.position="fixed";
-  introFrame.style.width="1px";
-  introFrame.style.height="1px";
-  introFrame.style.opacity="0";
-  introFrame.style.pointerEvents="none";
-
-  document.body.appendChild(introFrame);
-
-  // para aos 57 segundos
-  setTimeout(()=>{
-    if(introFrame) introFrame.remove();
-  }, 57000);
-}
-
-
-/* =============================
-   FUNÇÃO BOTÃO PADRÃO
-============================= */
-function setButton(text, action){
-  buttons.innerHTML = "";
-  const b = document.createElement("button");
-  b.innerText = text;
-  b.onclick = action;
+function setButton(text,fn){
+  buttons.innerHTML="";
+  const b=document.createElement("button");
+  b.innerText=text;
+  b.onclick=fn;
   buttons.appendChild(b);
 }
-   
-/* =============================
-   ETAPA 0 – aviso volume
-============================= */
+
+function piscar(el,text,delay,speed){
+  setTimeout(()=>{
+    el.innerText=text;
+    setInterval(()=>{
+      beep(800,40);
+    },speed);
+  },delay);
+}
+
+/* =====================================================
+   ETAPA 0 (ALERTA VOLUME)
+===================================================== */
+
 function etapa0(){
 
-content.innerHTML = `
+content.innerHTML=`
 ⚠️<br><br>
-para uma experiência 100% perfeita,<br>
-aumente o volume do celular.<br><br>
-
-<small style="opacity:.6">(confie em mim)</small>
+aumente o volume do celular<br>
+para a experiência perfeita
 `;
 
 buttons.innerHTML="";
 
-const ok = document.createElement("button");
+const ok=document.createElement("button");
 ok.innerText="ok";
 
-ok.onclick = ()=>{
-  tocarIntro57s(); // 🔊 toca música
-  etapa1();        // vai pra etapa 1
+ok.onclick=()=>{
+  play1();  // começa música etapa 1
+  etapa1();
 };
 
 buttons.appendChild(ok);
 }
 
-/* =============================
+/* =====================================================
    ETAPA 1
-============================= */
+===================================================== */
+
 function etapa1(){
-content.innerHTML = `
+content.innerHTML=`
 você acabou de escanear um QR Code.<br><br>
 não tem volta.
 `;
-setButton("seguir mesmo assim", etapa2);
+
+setButton("seguir mesmo assim", ()=>{
+  stop1(); // PARA música etapa 1
+  etapa2();
+});
 }
 
-/* =============================
-   ETAPA 2 – piscando + SOM
-============================= */
+/* =====================================================
+   ETAPA 2 (BEEP + piscando)
+===================================================== */
+
 function etapa2(){
 
-content.innerHTML = `
+content.innerHTML=`
 coletando dados...<br><br>
-
 <span id="s">surpresa: ...</span><br>
 <span id="c">confusão: ...</span><br>
 <span id="j">julgamento silencioso: ...</span>
 `;
 
-const s = document.getElementById("s");
-const c = document.getElementById("c");
-const j = document.getElementById("j");
+piscar(document.getElementById("s"),"surpresa: OK",600,900);
+piscar(document.getElementById("c"),"confusão: OK",1400,700);
+piscar(document.getElementById("j"),"julgamento silencioso: PROVÁVEL",2200,450);
 
 setButton("prosseguir", etapa3);
-
-/* mesma função piscar */
-piscar(s,"surpresa: OK",600,900);
-piscar(c,"confusão: OK",1400,650);
-piscar(j,"julgamento silencioso: PROVÁVEL",2200,450);
-
 }
 
 /* =============================
@@ -353,7 +256,10 @@ Recomendado: fechar o navegador.
 </div>
 `;
 errorNoise(); // 
-setButton("continuar por curiosidade", etapa5);
+setButton("continuar por curiosidade", ()=>{
+  play5(); // toca etapa 5
+  etapa5();
+});
 }
 
 /* =============================
@@ -361,7 +267,7 @@ setButton("continuar por curiosidade", etapa5);
 ============================= */
 function etapa5(){
 
-iniciarLoopMusica(); // 🔊 toca ao entrar
+iniciarLoopMusica(); 
 
 content.innerHTML=`
 isso NÃO é um flerte.<br>
@@ -372,7 +278,7 @@ e do seu humor hoje.<br>
 `;
 
 setButton("ok mas quero ver", ()=>{
-  clearInterval(ytInterval); // para música ao sair
+    stop5();
   etapa6();
 });
 }
@@ -443,47 +349,55 @@ buttons.appendChild(sim);
 buttons.appendChild(nao);
 
 let fugidas=0;
-
+/* botão parar bloqueado */
+parar.onclick=()=>{
+  beep(200,150);
+};
+   
 /* CONTINUAR fugindo */
 sim.onmouseover = ()=>{
 
-  fugidas++;
-
-  sim.style.position="absolute";
-  sim.style.left=Math.random()*80+"%";
-  sim.style.top=Math.random()*80+"%";
-
-  if(fugidas>=5){
-    const perdeu = confirm("já perdeu a paciência?");
-    
-    if(!perdeu){
-      content.innerHTML += `<br><br><small style="opacity:.5">para de mentir pra si mesma.</small>`;
-      return;
-    }
-
-    mostrarSabia();
+  if(fugidas<6){
+    fugidas++;
+    continuar.style.position="absolute";
+    continuar.style.left=Math.random()*80+"%";
+    continuar.style.top=Math.random()*80+"%";
+    return;
   }
+
+  perguntar();
 };
 
-/* PARAR normal */
-nao.onclick = ()=>{
-  content.innerHTML += `<br><br><small style="opacity:.5">para de mentir pra si mesma.</small>`;
-};
+function perguntar(){
+
+  buttons.innerHTML="";
+
+  const sim=document.createElement("button");
+  const nao=document.createElement("button");
+
+  sim.innerText="sim";
+  nao.innerText="não";
+
+  buttons.appendChild(sim);
+  buttons.appendChild(nao);
+
+  sim.onclick=mostrarSabia;
+
+  nao.onclick=()=>{
+    content.innerHTML+="<br><small>para de mentir pra si mesma.</small>";
+    setButton("ok, termina logo isso", etapa8);
+  };
+}
 }
 
-/* =============================
-   SABIA + botão final
-============================= */
+/* =====================================================
+   FINAL
+===================================================== */
+
 function mostrarSabia(){
-
-content.innerHTML=`
-sabia.
-`;
-
+content.innerHTML="sabia.";
 setButton("ok, termina logo isso", etapa8);
-
 }
-
 
 /* =============================
    ETAPA 8
@@ -491,8 +405,7 @@ setButton("ok, termina logo isso", etapa8);
 function etapa8(){
 content.innerHTML=`
 parabéns.<br>
-você chegou até o final.<br>
-ninguém pediu por isso.
+você chegou até o final.
 `;
 setButton("ver conclusão", mostrarShrek);
 }
