@@ -151,6 +151,73 @@ function errorNoise(){
     setTimeout(()=>beep(150+Math.random()*200,60), i*70);
   }
 }
+   
+/* ========= TOCAR 15s DO YOUTUBE ========= */
+
+let ytFrame = null;
+let ytInterval = null;
+
+function tocarMusica15s(){
+
+  // remove se já existir
+  if(ytFrame) ytFrame.remove();
+
+  ytFrame = document.createElement("iframe");
+
+  ytFrame.src =
+    "https://www.youtube.com/embed/izGwDsrQ1eQ?autoplay=1&start=0&controls=0";
+
+  ytFrame.style.position="fixed";
+  ytFrame.style.width="1px";
+  ytFrame.style.height="1px";
+  ytFrame.style.opacity="0";
+  ytFrame.style.pointerEvents="none";
+
+  document.body.appendChild(ytFrame);
+
+  // para após 15s
+  setTimeout(()=>{
+    if(ytFrame) ytFrame.remove();
+  },15000);
+}
+
+/* repetir a cada 15 minutos */
+function iniciarLoopMusica(){
+
+  tocarMusica15s();
+
+  if(ytInterval) clearInterval(ytInterval);
+
+  ytInterval = setInterval(()=>{
+    tocarMusica15s();
+  }, 15 * 60 * 1000); // 15 minutos
+}
+
+   /* ========= MUSICA INTRO 57s ========= */
+let introFrame = null;
+
+function tocarIntro57s(){
+
+  if(introFrame) introFrame.remove();
+
+  introFrame = document.createElement("iframe");
+
+  introFrame.src =
+    "https://www.youtube.com/embed/YMmDtydK-L0?autoplay=1&controls=0";
+
+  introFrame.style.position="fixed";
+  introFrame.style.width="1px";
+  introFrame.style.height="1px";
+  introFrame.style.opacity="0";
+  introFrame.style.pointerEvents="none";
+
+  document.body.appendChild(introFrame);
+
+  // para aos 57 segundos
+  setTimeout(()=>{
+    if(introFrame) introFrame.remove();
+  }, 57000);
+}
 
 
 /* =============================
@@ -162,6 +229,32 @@ function setButton(text, action){
   b.innerText = text;
   b.onclick = action;
   buttons.appendChild(b);
+}
+   
+/* =============================
+   ETAPA 0 – aviso volume
+============================= */
+function etapa0(){
+
+content.innerHTML = `
+⚠️<br><br>
+para uma experiência 100% perfeita,<br>
+aumente o volume do celular.<br><br>
+
+<small style="opacity:.6">(confie em mim)</small>
+`;
+
+buttons.innerHTML="";
+
+const ok = document.createElement("button");
+ok.innerText="ok";
+
+ok.onclick = ()=>{
+  tocarIntro57s(); // 🔊 toca música
+  etapa1();        // vai pra etapa 1
+};
+
+buttons.appendChild(ok);
 }
 
 /* =============================
@@ -275,6 +368,8 @@ setButton("continuar por curiosidade", etapa5);
 ============================= */
 function etapa5(){
 
+iniciarLoopMusica(); // 🔊 toca ao entrar
+
 content.innerHTML=`
 isso NÃO é um flerte.<br>
 talvez seja.<br>
@@ -283,7 +378,10 @@ dos astros.<br>
 e do seu humor hoje.<br>
 `;
 
-setButton("ok mas quero ver", etapa6);
+setButton("ok mas quero ver", ()=>{
+  clearInterval(ytInterval); // para música ao sair
+  etapa6();
+});
 }
 
 /* =============================
@@ -422,7 +520,7 @@ document.body.innerHTML=`
 `;
 }
 
-etapa1();
+etapa0();
 </script>
 </body>
 </html>
