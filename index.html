@@ -185,16 +185,43 @@ function etapa2(){
 
 content.innerHTML=`
 coletando dados...<br><br>
+
 <span id="s">surpresa: ...</span><br>
 <span id="c">confusão: ...</span><br>
 <span id="j">julgamento silencioso: ...</span>
 `;
 
-piscar(document.getElementById("s"),"surpresa: OK",600,900);
-piscar(document.getElementById("c"),"confusão: OK",1400,700);
-piscar(document.getElementById("j"),"julgamento silencioso: PROVÁVEL",2200,450);
+const s=document.getElementById("s");
+const c=document.getElementById("c");
+const j=document.getElementById("j");
 
 setButton("prosseguir", etapa3);
+
+
+/* 🔥 função simples (1 beep só) */
+function revelar(el,texto,delay,freq){
+
+  setTimeout(()=>{
+
+    el.innerText = texto;
+
+    beep(freq,120); // 🔊 só 1 som curto
+
+    el.style.opacity="0.3";
+
+    setTimeout(()=>{
+      el.style.opacity="1";
+    },120);
+
+  },delay);
+}
+
+
+/* tempos sincronizados */
+revelar(s,"surpresa: OK",600,900);
+revelar(c,"confusão: OK",1400,650);
+revelar(j,"julgamento silencioso: PROVÁVEL",2200,450);
+
 }
 
 /* =============================
@@ -257,17 +284,16 @@ Recomendado: fechar o navegador.
 `;
 errorNoise(); // 
 setButton("continuar por curiosidade", ()=>{
-  play5(); // toca etapa 5
   etapa5();
 });
-}
+
 
 /* =============================
    ETAPA 5
 ============================= */
 function etapa5(){
 
-iniciarLoopMusica(); 
+play5(); // 🔊 toca ao ENTRAR (aqui é o lugar correto)
 
 content.innerHTML=`
 isso NÃO é um flerte.<br>
@@ -278,7 +304,7 @@ e do seu humor hoje.<br>
 `;
 
 setButton("ok mas quero ver", ()=>{
-    stop5();
+  stop5(); // 🔇 para ao sair
   etapa6();
 });
 }
