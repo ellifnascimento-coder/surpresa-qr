@@ -300,8 +300,7 @@ setButton("continuar por curiosidade", ()=>{
 ============================= */
 function etapa5(){
 
-play5(); // 🔊 toca ao ENTRAR (aqui é o lugar correto)
-
+// 🔥 1 — primeiro troca a tela
 content.innerHTML=`
 isso NÃO é um flerte.<br>
 talvez seja.<br>
@@ -310,8 +309,14 @@ dos astros.<br>
 e do seu humor hoje.<br>
 `;
 
+// 🔥 2 — depois toca música (com pequeno delay)
+setTimeout(()=>{
+  iniciarLoopMusica();
+}, 100);
+
+// botão
 setButton("ok mas quero ver", ()=>{
-  stop5(); // 🔇 para ao sair
+  pararMusica();
   etapa6();
 });
 }
