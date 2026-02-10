@@ -35,7 +35,14 @@ body{
 
 .card{
   max-width:520px;
-  position:relative;
+}
+
+.floating{
+  position:fixed; /* 🔥 em vez de absolute */
+  font-size:11px;
+  opacity:.15;
+  pointer-events:none;
+  white-space:nowrap;
 }
 
 button{
@@ -167,7 +174,7 @@ carregando conteúdo de baixa qualidade...
 <div class="progress"><div class="bar" id="bar"></div></div>
 `;
 
-setButton("aumentar volume mental", etapa4);
+setButton("aceitar termos que não li", etapa4);
 
 let width=0;
 const bar=document.getElementById("bar");
@@ -191,7 +198,6 @@ ERROS FATAIS DETECTADOS
 
 [FAIL] QR Code em flores
 [FAIL] essa página existir
-[FAIL] decisões questionáveis
 [CRITICAL] você ainda aqui
 
 Sistema instável.
@@ -210,33 +216,59 @@ function etapa5(){
 content.innerHTML=`
 isso NÃO é um flerte.<br>
 talvez seja.<br>
-não sabemos.
+depende do ponto de vista.<br>
+dos astros.<br>
+e do seu humor hoje.<br>
 `;
 
 setButton("ok mas quero ver", etapa6);
 }
 
 /* =============================
-   ETAPA 6 – textos espalhados
+   ETAPA 6 – respiração + textos espalhados
 ============================= */
 function etapa6(){
 
-content.innerHTML=`PAUSA OBRIGATÓRIA.<br>respire fundo...`;
+content.innerHTML=`
+PAUSA OBRIGATÓRIA.<br><br>
+<span id="respira" style="font-size:22px;opacity:.8">inspira…</span>
+`;
 
-for(let i=0;i<15;i++){
+const r = document.getElementById("respira");
+
+let estado = true;
+
+/* alterna inspira/expira */
+setInterval(()=>{
+  r.innerText = estado ? "expira…" : "inspira…";
+  r.style.opacity = estado ? ".3" : "1";
+  estado = !estado;
+}, 900);
+
+
+/* remove antigos */
+document.querySelectorAll(".floating").forEach(e=>e.remove());
+
+/* espalha pela TELA INTEIRA (não no card) */
+for(let i=0;i<30;i++){
+
   const t=document.createElement("div");
+
   t.className="floating";
-  t.style.left=Math.random()*100+"%";
-  t.style.top=Math.random()*100+"%";
-  t.innerText="*observação irrelevante: eu sou meio apaixonado por você";
-  card.appendChild(t);
+  t.innerText="*observação irrelevante: eu sou meio apaixonada por você";
+
+  t.style.left=Math.random()*100+"vw";
+  t.style.top=Math.random()*100+"vh";
+  t.style.transform=`rotate(${Math.random()*30-15}deg)`;
+
+  document.body.appendChild(t);
 }
 
-setButton("continuar", etapa7);
+setButton("fingir que não li e continuar", etapa7);
 }
 
 /* =============================
-   ETAPA 7 – dois botões + caos
+   ETAPA 7 – psicologia reversa
 ============================= */
 function etapa7(){
 
@@ -244,13 +276,13 @@ content.innerHTML=`
 aviso:<br>
 nada aqui faz sentido.<br>
 mas você clicou em continuar.<br>
-tá curiosa?
+então a curiosidade venceu.
 `;
 
 buttons.innerHTML="";
 
 const sim=document.createElement("button");
-sim.innerText="continuar";
+sim.innerText="sim";
 
 const nao=document.createElement("button");
 nao.innerText="não";
@@ -258,27 +290,45 @@ nao.innerText="não";
 buttons.appendChild(sim);
 buttons.appendChild(nao);
 
-let tentativas=0;
+let fugidas=0;
 
-sim.onmouseover=()=>{
-  tentativas++;
-  sim.style.position="absolute";
-  sim.style.left=Math.random()*80+"%";
-  sim.style.top=Math.random()*80+"%";
-
-  if(tentativas>=4){
-    alert("JÁ PERDEU A PACIÊNCIA?");
-    etapa8();
-  }
+/* ========= SIM ========= */
+sim.onclick = ()=>{
+  mostrarSabia();
 };
 
-nao.onmouseover=()=>{
+
+/* ========= NÃO fugindo ========= */
+nao.onmouseover = ()=>{
+
+  fugidas++;
+
   nao.style.position="absolute";
   nao.style.left=Math.random()*80+"%";
   nao.style.top=Math.random()*80+"%";
+
+  if(fugidas>=10){
+    nao.remove();
+
+    content.innerHTML += `<br><br><small style="opacity:.5">para de mentir pra si mesma.</small>`;
+  }
 };
 
 }
+
+/* =============================
+   SABIA + botão final
+============================= */
+function mostrarSabia(){
+
+content.innerHTML=`
+sabia.
+`;
+
+setButton("ok, termina logo isso", etapa8);
+
+}
+
 
 /* =============================
    ETAPA 8
