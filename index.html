@@ -116,6 +116,31 @@ const card = document.getElementById("card");
 
 let step = 0;
 
+   /* ========= SOM BEEP ========= */
+function beep(freq=700, duration=80){
+
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.frequency.value = freq;
+  osc.type = "square";
+
+  osc.start();
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.00001,
+    ctx.currentTime + duration/1000
+  );
+
+  osc.stop(ctx.currentTime + duration/1000);
+}
+
+
 /* =============================
    FUNÇÃO BOTÃO PADRÃO
 ============================= */
@@ -139,7 +164,7 @@ setButton("seguir mesmo assim", etapa2);
 }
 
 /* =============================
-   ETAPA 2 – piscando OK
+   ETAPA 2 – piscando + SOM
 ============================= */
 function etapa2(){
 
@@ -156,16 +181,29 @@ const s=document.getElementById("s");
 const c=document.getElementById("c");
 const j=document.getElementById("j");
 
-s.classList.add("blink");
+function piscar(el, texto, delay, freq){
 
-setTimeout(()=>{s.innerHTML="surpresa: OK"; s.classList.remove("blink"); c.classList.add("blink");},1000);
-setTimeout(()=>{c.innerHTML="confusão: OK"; c.classList.remove("blink"); j.classList.add("blink");},2000);
-setTimeout(()=>{j.innerHTML="julgamento silencioso: PROVÁVEL"; j.classList.remove("blink");},3000);
+  setTimeout(()=>{
+
+    el.classList.add("blink");
+    beep(freq,120);
+
+    setTimeout(()=>{
+      el.innerHTML = texto;
+      el.classList.remove("blink");
+    },500);
+
+  }, delay);
+}
+
+piscar(s,"surpresa: OK",500,800);
+piscar(c,"confusão: OK",1400,650);
+piscar(j,"julgamento silencioso: PROVÁVEL",2300,500);
 
 }
 
 /* =============================
-   ETAPA 3 – barra real + %
+   ETAPA 3 – barra real + % VISÍVEL
 ============================= */
 function etapa3(){
 
@@ -176,31 +214,39 @@ carregando conteúdo de baixa qualidade...<br><br>
   <div class="bar" id="bar"></div>
 </div>
 
-<div id="percent" style="margin-top:10px; opacity:.7">
+<div id="percent" style="
+  margin-top:12px;
+  font-size:18px;
+  font-weight:bold;
+">
 0%
 </div>
 `;
 
-setButton("aceitar termos que não li", etapa4);
-
-let width=0;
-
 const bar=document.getElementById("bar");
 const percent=document.getElementById("percent");
 
+let width=0;
+
+/* botão só aparece no final (melhor UX) */
+buttons.innerHTML="";
+
 let interval=setInterval(()=>{
 
-  width += 2;
+  width++;
 
   bar.style.width = width + "%";
   percent.innerText = width + "%";
 
-  if(width >= 100){
+  if(width>=100){
     clearInterval(interval);
-    percent.innerText = "100% ✓";
+
+    percent.innerText="100% ✓";
+
+    setButton("aceitar termos que não li", etapa4);
   }
 
-}, 40);
+}, 25);
 
 }
 
