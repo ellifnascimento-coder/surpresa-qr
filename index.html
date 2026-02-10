@@ -116,29 +116,42 @@ const card = document.getElementById("card");
 
 let step = 0;
 
-   /* ========= SOM BEEP ========= */
+/* ========= SOM GLOBAL ========= */
+let audioCtx;
+
+function getCtx(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioCtx;
+}
+
 function beep(freq=700, duration=80){
 
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const ctx = getCtx();
 
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
 
+  osc.type="square";
+  osc.frequency.value=freq;
+
+  gain.gain.value=0.05;
+
   osc.connect(gain);
   gain.connect(ctx.destination);
 
-  osc.frequency.value = freq;
-  osc.type = "square";
-
   osc.start();
-
-  gain.gain.exponentialRampToValueAtTime(
-    0.00001,
-    ctx.currentTime + duration/1000
-  );
-
   osc.stop(ctx.currentTime + duration/1000);
 }
+
+/* erro glitch */
+function errorNoise(){
+  for(let i=0;i<7;i++){
+    setTimeout(()=>beep(150+Math.random()*200,60), i*70);
+  }
+}
+
 
 /* =============================
    FUNÇÃO BOTÃO PADRÃO
@@ -165,36 +178,34 @@ setButton("seguir mesmo assim", etapa2);
 /* =============================
    ETAPA 2 – piscando + SOM
 ============================= */
-function etapa2(){
+function piscar(el, textoFinal, delay, freq){
 
-content.innerHTML = `
-coletando dados...<br><br>
-<span id="s">surpresa: ...</span><br>
-<span id="c">confusão: ...</span><br>
-<span id="j">julgamento silencioso: ...</span>
-`;
-
-setButton("prosseguir", etapa3);
-
-const s=document.getElementById("s");
-const c=document.getElementById("c");
-const j=document.getElementById("j");
-
-function piscar(el, texto, delay){
   setTimeout(()=>{
+
     el.classList.add("blink");
 
+    // 🔊 som repetindo enquanto pisca
+    const som = setInterval(()=>{
+      beep(freq, 60);
+    }, 120);
+
+    // tempo total piscando
     setTimeout(()=>{
-      el.textContent = texto;
+
+      clearInterval(som); // para som
       el.classList.remove("blink");
-    },400);
+      el.textContent = textoFinal;
 
-  },delay);
+      beep(freq+200, 120); // bip final de confirmação
+
+    }, 700);
+
+  }, delay);
 }
+piscar(s,"surpresa: OK",600,900);
+piscar(c,"confusão: OK",1400,650);
+piscar(j,"julgamento silencioso: PROVÁVEL",2200,450);
 
-piscar(s,"surpresa: OK",600);
-piscar(c,"confusão: OK",1400);
-piscar(j,"julgamento silencioso: PROVÁVEL",2200);
 }
 
 /* =============================
@@ -255,7 +266,7 @@ Sistema instável.
 Recomendado: fechar o navegador.
 </div>
 `;
-
+errorNoise(); // 
 setButton("continuar por curiosidade", etapa5);
 }
 
