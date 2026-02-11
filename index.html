@@ -282,6 +282,7 @@ function etapa7(){
 
   content.innerHTML=`aviso:<br>nada aqui faz sentido.<br>a curiosidade venceu.`;
 
+  const card = document.querySelector('.card');
   const continuar=document.createElement("button");
   continuar.innerText="continuar";
   const parar=document.createElement("button");
@@ -294,39 +295,45 @@ function etapa7(){
 
   let fugidas=0;
 
-  // Posição inicial próxima do outro botão
+  // Coloca botão relativo ao card
   continuar.style.position="absolute";
   continuar.style.left="50%";
   continuar.style.top="50%";
+  continuar.style.transform = "translate(-50%, -50%)"; // centraliza corretamente
 
   // Detecta se é touch (celular)
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-  // Função que move o botão continuar
+  // Função que move o botão
   function moverBotao() {
       fugidas++;
       if(fugidas <= 6){
-          // Limita a movimentação dentro do card
-          const cardRect = document.querySelector('.card').getBoundingClientRect();
+          const cardRect = card.getBoundingClientRect();
           const btnWidth = continuar.offsetWidth;
           const btnHeight = continuar.offsetHeight;
 
-          // Nova posição aleatória dentro do card
-          continuar.style.left = Math.random() * (cardRect.width - btnWidth) + "px";
-          continuar.style.top  = Math.random() * (cardRect.height - btnHeight) + "px";
+          // Calcula nova posição dentro do card, com margem
+          const padding = 10;
+          const newLeft = Math.random() * (cardRect.width - btnWidth - padding*2) + padding;
+          const newTop  = Math.random() * (cardRect.height - btnHeight - padding*2) + padding;
+
+          continuar.style.left = newLeft + "px";
+          continuar.style.top  = newTop  + "px";
       } else {
-          // 6ª tentativa: mostrar balão com opções SIM / NÃO
+          // 6ª tentativa
           continuar.remove();
           parar.remove();
           mostrarBalãoDecisao();
       }
   }
 
-  // Atribui comportamento correto para desktop e touch
   if(isTouch){
-      continuar.onclick = moverBotao; // no celular, foge ao tocar
+      continuar.addEventListener("touchstart", (e)=>{
+          e.preventDefault(); // evita clique normal
+          moverBotao();
+      }, {passive:false});
   } else {
-      continuar.onmouseover = moverBotao; // no desktop, foge ao passar mouse
+      continuar.onmouseover = moverBotao;
   }
 }
 
