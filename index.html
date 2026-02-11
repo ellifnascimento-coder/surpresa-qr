@@ -256,17 +256,20 @@ function etapa6(){
     estado = !estado;
   }, 900);
 
-  // espalha textos flutuantes atrás do card
-  for(let i=0;i<30;i++){
-    const t=document.createElement("div");
-    t.className="floating";
-    t.innerText="*observação irrelevante: eu sou meio apaixonada por você";
-    t.style.left=Math.random()*100+"vw";
-    t.style.top=Math.random()*100+"vh";
-    t.style.transform=`rotate(${Math.random()*30-15}deg)`;
-    document.body.appendChild(t);
-  }
-
+ // espalha textos flutuantes atrás do card, mais legível
+const numFlutuantes = 15; // menos que 30
+for(let i=0;i<numFlutuantes;i++){
+  const t=document.createElement("div");
+  t.className="floating";
+  t.innerText="*observação irrelevante: eu sou meio apaixonada por você";
+  
+  t.style.left=(10 + i*5 + Math.random()*20) + "vw"; // espalha horizontal
+  t.style.top=(5 + i*5 + Math.random()*10) + "vh";    // espalha vertical
+  t.style.fontSize="14px";
+  t.style.opacity=0.15 + Math.random()*0.2;
+  t.style.transform=`rotate(${Math.random()*30-15}deg)`;
+  document.body.appendChild(t);
+}
   setButton("fingir que não li e continuar", etapa7);
 }
 
@@ -276,7 +279,6 @@ function etapa6(){
 function etapa7(){
   limparTudo();
   clearInterval(respiraInterval);
-  document.querySelectorAll(".floating").forEach(e=>e.remove());
 
   content.innerHTML=`aviso:<br>nada aqui faz sentido.<br>a curiosidade venceu.`;
 
@@ -287,29 +289,50 @@ function etapa7(){
   buttons.appendChild(continuar);
   buttons.appendChild(parar);
 
+  // Bloqueia o botão parar
+  parar.onclick=()=>{ beep(200,150); alert("Você não pode clicar aqui"); };
+
   let fugidas=0;
-  parar.onclick=()=>beep(200,150);
+
+  // Posição inicial próxima do outro botão
+  continuar.style.position="absolute";
+  continuar.style.left="50%";
+  continuar.style.top="50%";
 
   continuar.onmouseover=()=>{
-    if(fugidas<6){
-      fugidas++;
-      continuar.style.position="absolute";
-      continuar.style.left=Math.random()*80+"%";
-      continuar.style.top=Math.random()*80+"%";
-      return;
+    fugidas++;
+    if(fugidas <= 6){
+      // Move o botão para uma posição distante aleatória
+      continuar.style.left=Math.random()*80 + "%";
+      continuar.style.top=Math.random()*80 + "%";
+    } else {
+      // 6ª tentativa: mostrar balão com opções SIM / NÃO
+      continuar.remove(); // remove botão continuar
+      parar.remove(); // remove botão parar
+      mostrarBalãoDecisao();
     }
-    mostrarSabia();
   };
 }
 
-/* =====================================================
-   FINAL
-===================================================== */
-function mostrarSabia(){
-  limparTudo();
-  content.innerHTML="sabia.";
-  setButton("ok, termina logo isso",etapa8);
+// Função que mostra o balão de decisão SIM / NÃO
+function mostrarBalãoDecisao(){
+  content.innerHTML="Já perdeu a paciência.<br>Escolha:";
+  
+  const simBtn=document.createElement("button");
+  simBtn.innerText="Sim";
+  const naoBtn=document.createElement("button");
+  naoBtn.innerText="Não";
+
+  buttons.appendChild(simBtn);
+  buttons.appendChild(naoBtn);
+
+  simBtn.onclick=()=>{ content.innerHTML="sabia."; setButton("ok, terminar logo isso", etapa8); };
+  naoBtn.onclick=()=>{ content.innerHTML="para de mentir pra si mesma"; setButton("ok, terminar logo isso", etapa8); };
 }
+  
+/* =====================================================
+   ETAPA 8 
+===================================================== */
 
 function etapa8(){
   limparTudo();
