@@ -299,19 +299,35 @@ function etapa7(){
   continuar.style.left="50%";
   continuar.style.top="50%";
 
-  continuar.onmouseover=()=>{
-    fugidas++;
-    if(fugidas <= 6){
-      // Move o botão para uma posição distante aleatória
-      continuar.style.left=Math.random()*80 + "%";
-      continuar.style.top=Math.random()*80 + "%";
-    } else {
-      // 6ª tentativa: mostrar balão com opções SIM / NÃO
-      continuar.remove(); // remove botão continuar
-      parar.remove(); // remove botão parar
-      mostrarBalãoDecisao();
-    }
-  };
+  // Detecta se é touch (celular)
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  // Função que move o botão continuar
+  function moverBotao() {
+      fugidas++;
+      if(fugidas <= 6){
+          // Limita a movimentação dentro do card
+          const cardRect = document.querySelector('.card').getBoundingClientRect();
+          const btnWidth = continuar.offsetWidth;
+          const btnHeight = continuar.offsetHeight;
+
+          // Nova posição aleatória dentro do card
+          continuar.style.left = Math.random() * (cardRect.width - btnWidth) + "px";
+          continuar.style.top  = Math.random() * (cardRect.height - btnHeight) + "px";
+      } else {
+          // 6ª tentativa: mostrar balão com opções SIM / NÃO
+          continuar.remove();
+          parar.remove();
+          mostrarBalãoDecisao();
+      }
+  }
+
+  // Atribui comportamento correto para desktop e touch
+  if(isTouch){
+      continuar.onclick = moverBotao; // no celular, foge ao tocar
+  } else {
+      continuar.onmouseover = moverBotao; // no desktop, foge ao passar mouse
+  }
 }
 
 // Função que mostra o balão de decisão SIM / NÃO
@@ -329,7 +345,7 @@ function mostrarBalãoDecisao(){
   simBtn.onclick=()=>{ content.innerHTML="sabia."; setButton("ok, terminar logo isso", etapa8); };
   naoBtn.onclick=()=>{ content.innerHTML="para de mentir pra si mesma"; setButton("ok, terminar logo isso", etapa8); };
 }
-  
+
 /* =====================================================
    ETAPA 8 
 ===================================================== */
