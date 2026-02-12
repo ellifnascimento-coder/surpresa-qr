@@ -20,9 +20,9 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
-  text-align:center;
-  overflow:hidden;
+
+  min-height:100vh; /* ← AQUI */
+  overflow-x:hidden; /* ← AQUI */
 }
 
 .card{
@@ -68,6 +68,21 @@ button{
   opacity:.2;
   pointer-events:none;
   z-index:-1; /* atrás do card */
+}
+  
+.card{
+  min-height: 220px;
+  padding: 20px;
+}
+
+#buttons{
+  margin-top: 25px;
+  min-height: 60px;
+}
+
+button{
+  font-size:16px;
+  min-width:120px;
 }
 
 
@@ -503,19 +518,19 @@ function limparTudo(){
   document.querySelectorAll(".floating").forEach(e=>e.remove());
   clearInterval(respiraInterval);
 
-  // SEM fade na primeira tela
+  // 👉 PRIMEIRA TELA: SEM animação nenhuma
   if(primeiraExecucao){
-    card.style.opacity = 1;
-    primeiraExecucao = false;
+    primeiraExecucao=false;
+    card.style.opacity=1;
     return;
   }
 
-  // fade só nas próximas etapas
-  card.style.opacity = 0;
+  // 👉 outras telas: fade simples
+  card.style.opacity=0;
 
-  setTimeout(()=>{
-    card.style.opacity = 1;
-  },120);
+  requestAnimationFrame(()=>{
+    card.style.opacity=1;
+  });
 }
 
 
