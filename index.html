@@ -29,7 +29,7 @@ body{
   max-width:520px;
   position:relative;
   z-index:1;
-  transition:opacity .25s ease; /* fade suave entre etapas */
+  transition:opacity .25s ease; transform .12s ease; /* fade suave entre etapas */
 }
 
 button{
@@ -188,30 +188,22 @@ function setButton(text,fn){
 ===================================================== */
 
 function batimento(){
+
+  // vibração (android)
   vibrar(60);
   setTimeout(()=>vibrar(40),120);
-}
 
-function chuvaCoracoes(qtd=25){
-  for(let i=0;i<qtd;i++){
-    const h=document.createElement("div");
-    h.innerText="💙";
-    h.style.position="fixed";
-    h.style.left=Math.random()*100+"vw";
-    h.style.bottom="-20px";
-    h.style.fontSize=(18+Math.random()*26)+"px";
-    h.style.opacity=.9;
-    h.style.transition="transform 3s linear, opacity 3s";
-    h.style.pointerEvents="none";
-    document.body.appendChild(h);
+  // som grave tipo coração
+  beep(90,120);
+  setTimeout(()=>beep(70,100),120);
 
-    setTimeout(()=>{
-      h.style.transform="translateY(-120vh)";
-      h.style.opacity=0;
-    },50);
+  // micro "pulsar" visual
+  const card = document.querySelector('.card');
 
-    setTimeout(()=>h.remove(),3000);
-  }
+  card.style.transform = "scale(1.04)";
+  setTimeout(()=>{
+    card.style.transform = "scale(1)";
+  },120);
 }
   
 /* =====================================================
@@ -486,9 +478,7 @@ function etapa9(){
   `;
 
   // 💓 batimento cardíaco
-  batimento();
-  setTimeout(batimento,400);
-  setTimeout(batimento,800);
+  [0,300,600,900].forEach(t=>setTimeout(batimento,t));
 
   // 💙 corações
   setTimeout(()=>chuvaCoracoes(30),500);
