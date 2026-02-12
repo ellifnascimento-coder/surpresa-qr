@@ -516,8 +516,8 @@ function mostrarBalãoDecisao(){
 
   simBtn.onclick=()=>{ content.innerHTML="sabia."; setButton("ok, terminar logo isso", etapa8); };
   naoBtn.onclick=()=>{ content.innerHTML="para de mentir pra si mesma"; setButton("ok, terminar logo isso", etapa8); };
-  tocarFinal();   // 🔥 começa a música no clique
-}
+  }
+  
 
 /* =====================================================
    ETAPA 8 
@@ -525,6 +525,7 @@ function mostrarBalãoDecisao(){
 
 function etapa8(){
   limparTudo();
+  tocarFinal();   // 🔥 começa a música no clique
 
   content.innerHTML="parabéns.<br>você chegou até o final.";
 
