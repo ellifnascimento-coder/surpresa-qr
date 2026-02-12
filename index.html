@@ -163,14 +163,47 @@ function errorNoise(){ beep(120,200); }
 /* =====================================================
    🎵 ÁUDIOS
 ===================================================== */
-const audioEtapa1=new Audio("etapa1.mp3");
-const audioEtapa5=new Audio("etapa5.mp3");
-audioEtapa5.loop=true;
+const audioEtapa1 = new Audio("etapa1.mp3");
+const audioEtapa5 = new Audio("etapa5.mp3");
+const audioFinal  = new Audio("APERTA O PLAY.mp3.mpeg");
 
-function play1(){audioEtapa1.currentTime=0;audioEtapa1.play();}
-function stop1(){audioEtapa1.pause();}
-function iniciarLoopMusica(){audioEtapa5.currentTime=0;audioEtapa5.play();}
-function pararMusica(){audioEtapa5.pause();}
+audioEtapa5.loop = true;
+audioFinal.loop  = true;
+
+// 🔥 importante (melhora compatibilidade mobile)
+audioEtapa1.preload = "auto";
+audioEtapa5.preload = "auto";
+audioFinal.preload  = "auto";
+
+/* funções */
+function play1(){
+  audioEtapa1.currentTime = 0;
+  audioEtapa1.play();
+}
+
+function stop1(){
+  audioEtapa1.pause();
+}
+
+function iniciarLoopMusica(){
+  audioEtapa5.currentTime = 0;
+  audioEtapa5.play();
+}
+
+function pararMusica(){
+  audioEtapa5.pause();
+}
+
+function tocarFinal(){
+  audioFinal.currentTime = 0;
+  audioFinal.volume = 1;   // 🔥 garante volume máximo
+  audioFinal.play();
+}
+
+function pararFinal(){
+  audioFinal.pause();
+  audioFinal.currentTime = 0; // 🔥 reseta (evita continuar depois)
+}
 
 /* =====================================================
    AUX
@@ -491,25 +524,30 @@ function mostrarBalãoDecisao(){
 
 function etapa8(){
   limparTudo();
+
   content.innerHTML="parabéns.<br>você chegou até o final.";
-  setButton("ver conclusão",etapa9);
-;
+
+  setButton("ver conclusão", ()=>{
+    tocarFinal();   // 🔥 começa a música no clique
+    etapa9();
+  });
 }
+
 
 function mostrarShrek(){
 
   limparTudo();
+  pararFinal(); // 🔥 para a música de fundo
 
   content.innerHTML = `
   <div style="text-align:center">
     <p style="margin-bottom:15px">tá bom… agora é sério 😏</p>
 
     <video 
-  controls
-  preload="auto"
-  playsinline
-  style="width:100%; border-radius:12px;">
-      
+      controls
+      preload="auto"
+      playsinline
+      style="width:100%; border-radius:12px;">
       <source src="shrek.mp4" type="video/mp4">
     </video>
   </div>
