@@ -205,6 +205,38 @@ function batimento(){
     card.style.transform = "scale(1)";
   },120);
 }
+
+  /* =====================================================
+   💙 CHUVA DE CORAÇÕES
+===================================================== */
+function chuvaCoracoes(qtd=25){
+  for(let i=0;i<qtd;i++){
+
+    const h=document.createElement("div");
+    h.innerText="💙";
+
+    h.style.position="fixed";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="-30px";
+    h.style.fontSize=(18+Math.random()*26)+"px";
+    h.style.opacity=.95;
+    h.style.pointerEvents="none";
+    h.style.zIndex="9999";
+   h.style.transition="transform 3.5s ease-out, opacity 3.5s";
+
+    document.body.appendChild(h);
+
+    // anima subir
+    setTimeout(()=>{
+      h.style.transform="translateY(-120vh)";
+      h.style.opacity=0;
+    },50);
+
+    // remove depois
+    setTimeout(()=>h.remove(),3000);
+  }
+}
+
   
 /* =====================================================
    ETAPA 0
