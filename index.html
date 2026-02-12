@@ -255,12 +255,12 @@ function etapa1(){
 
   content.innerHTML=`
     <img src="Gatinho.png" style="
-      width:160px;
-      border-radius:14px;
-      margin-bottom:18px;
-      box-shadow:0 6px 20px rgba(0,0,0,.5);
+      width:180px;
+      display:block;
+      margin:0 auto 20px;
+      border-radius:12px;
     ">
-    <br>
+    
     você acabou de escanear um QR Code.<br><br>
     não tem volta.
   `;
@@ -270,6 +270,7 @@ function etapa1(){
     etapa2();
   });
 }
+
 /* =====================================================
    ETAPA 2
 ===================================================== */
@@ -489,30 +490,21 @@ function mostrarShrek(){
 
   limparTudo();
 
-  vibrar(200);
-  beep(500,120);
-
   content.innerHTML = `
-  tá bom.<br>
-  chega de enrolação.<br><br>
-  eu só queria te mostrar uma coisa.<br><br>
-  `;
+  <div style="text-align:center">
+    <p style="margin-bottom:15px">tá bom… agora é sério 😏</p>
 
-  // botão pra abrir vídeo
-  setButton("abrir vídeo 😏", abrirVideo);
-}
-
-function abrirVideo(){
-
-  document.body.innerHTML=`
-  <iframe
-    style="position:fixed;top:0;left:0;width:100vw;height:100vh;border:0;"
-    src="https://www.youtube.com/embed/_2aN_aXrQsw?playsinline=1&controls=1"
-    allowfullscreen>
-  </iframe>
+    <video 
+  controls
+  preload="auto"
+  playsinline
+  style="width:100%; border-radius:12px;">
+      
+      <source src="shrek.mp4" type="video/mp4">
+    </video>
+  </div>
   `;
 }
-
 
   /* =====================================================
    ETAPA 9 – clímax fofo + meme
