@@ -478,8 +478,8 @@ function mostrarShrek(){
 
   limparTudo();
 
-    vibrar(200);
-beep(500,120);
+  vibrar(200);
+  beep(500,120);
 
   content.innerHTML = `
   tá bom.<br>
@@ -490,12 +490,14 @@ beep(500,120);
   setTimeout(()=>{
 
     document.body.innerHTML=`
-    <iframe style="position:fixed;top:0;left:0;width:100vw;height:100vh;border:0;"
-    src="https://www.youtube.com/embed/_2aN_aXrQsw?autoplay=1"
-    allow="autoplay; fullscreen"></iframe>
+    <iframe
+      style="position:fixed;top:0;left:0;width:100vw;height:100vh;border:0;"
+      src="https://www.youtube.com/embed/_2aN_aXrQsw?autoplay=1&mute=1&playsinline=1&controls=0"
+      allow="autoplay; fullscreen"
+    ></iframe>
     `;
 
-  }, 3000); // 3 segundos
+  }, 3000);
 }
 
   /* =====================================================
