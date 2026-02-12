@@ -62,7 +62,7 @@ button{
   font-size:11px;
   opacity:.2;
   pointer-events:none;
-  z-index:-1;
+  z-index:-1; /* atrás do card */
 }
 </style>
 </head>
@@ -78,7 +78,7 @@ const content = document.getElementById("content");
 const buttons = document.getElementById("buttons");
 
 /* =====================================================
-   🔊 AUDIO CONTEXT + BEEP (mantido)
+   🔊 AUDIO CONTEXT + BEEP
 ===================================================== */
 let audioCtx;
 function getCtx(){
@@ -107,11 +107,14 @@ function beep(freq=700,duration=80){
 function errorNoise(){ beep(120,200); }
 
 /* =====================================================
-   🎵 ÁUDIOS (somente música da etapa 5 permanece)
+   🎵 ÁUDIOS
 ===================================================== */
+const audioEtapa1=new Audio("etapa1.mp3");
 const audioEtapa5=new Audio("etapa5.mp3");
 audioEtapa5.loop=true;
 
+function play1(){audioEtapa1.currentTime=0;audioEtapa1.play();}
+function stop1(){audioEtapa1.pause();}
 function iniciarLoopMusica(){audioEtapa5.currentTime=0;audioEtapa5.play();}
 function pararMusica(){audioEtapa5.pause();}
 
@@ -127,50 +130,29 @@ function setButton(text,fn){
 }
 
 /* =====================================================
-   ETAPA 0  (REMOVIDO play1)
+   ETAPA 0
 ===================================================== */
 function etapa0(){
   limparTudo();
   content.innerHTML=`⚠️<br><br>aumente o volume do celular<br>para a experiência perfeita`;
-  setButton("ok", etapa1);
+  setButton("ok",()=>{ play1(); etapa1(); });
 }
 
 /* =====================================================
-   ETAPA 1  ⭐ AGORA COM VÍDEO AUTOPLAY
+   ETAPA 1
 ===================================================== */
 function etapa1(){
   limparTudo();
-
-  content.innerHTML=`
-    você acabou de escanear um QR Code.<br><br>
-    não tem volta.<br><br>
-
-    <video
-      id="videoEtapa1"
-      src="etapa1.mp4"
-      autoplay
-      muted
-      playsinline
-      style="
-        width:100%;
-        max-width:420px;
-        border-radius:12px;
-        margin-top:18px;
-      ">
-    </video>
-  `;
-
+  content.innerHTML=`você acabou de escanear um QR Code.<br><br>não tem volta.`;
   setButton("seguir mesmo assim",()=>{
-    const v=document.getElementById("videoEtapa1");
-    if(v) v.pause();
+    stop1();
     etapa2();
   });
 }
 
 /* =====================================================
-   RESTANTE DO CÓDIGO (INALTERADO)
+   ETAPA 2
 ===================================================== */
-
 function etapa2(){
   limparTudo();
   content.innerHTML=`
@@ -194,6 +176,9 @@ coletando dados...<br><br>
   revelar(j,"julgamento silencioso: PROVÁVEL",2200,450);
 }
 
+/* =====================================================
+   ETAPA 3
+===================================================== */
 function etapa3(){
   limparTudo();
   content.innerHTML=`
@@ -216,14 +201,19 @@ carregando conteúdo de baixa qualidade...<br><br>
   },20);
 }
 
+/* =====================================================
+   ETAPA 4
+===================================================== */
 function etapa4(){
   limparTudo();
   content.innerHTML=`
 <div class="error">
 ERROS FATAIS DETECTADOS
+
 [FAIL] QR Code em flores
 [FAIL] essa página existir
 [CRITICAL] você ainda aqui
+
 Sistema instável.
 Recomendado: fechar o navegador.
 </div>`;
@@ -231,6 +221,9 @@ Recomendado: fechar o navegador.
   setButton("continuar por curiosidade",etapa5);
 }
 
+/* =====================================================
+   ETAPA 5
+===================================================== */
 function etapa5(){
   limparTudo();
   content.innerHTML=`
@@ -247,7 +240,10 @@ e do seu humor hoje.<br>
   });
 }
 
-let respiraInterval;
+/* =====================================================
+   ETAPA 6 – respiração + textos espalhados
+===================================================== */
+let respiraInterval; // variável global para limpar o intervalo
 function etapa6(){
   limparTudo();
   content.innerHTML=`PAUSA OBRIGATÓRIA.<br><br><span id="respira" style="font-size:22px;opacity:.8">inspira…</span>`;
@@ -260,15 +256,33 @@ function etapa6(){
     estado = !estado;
   }, 900);
 
+ // espalha textos flutuantes atrás do card, mais legível
+const numFlutuantes = 15; // menos que 30
+for(let i=0;i<numFlutuantes;i++){
+  const t=document.createElement("div");
+  t.className="floating";
+  t.innerText="*observação irrelevante: eu sou meio apaixonada por você";
+  
+  t.style.left=(10 + i*5 + Math.random()*20) + "vw"; // espalha horizontal
+  t.style.top=(5 + i*5 + Math.random()*10) + "vh";    // espalha vertical
+  t.style.fontSize="14px";
+  t.style.opacity=0.15 + Math.random()*0.2;
+  t.style.transform=`rotate(${Math.random()*30-15}deg)`;
+  document.body.appendChild(t);
+}
   setButton("fingir que não li e continuar", etapa7);
 }
 
+/* =====================================================
+   ETAPA 7 – psicologia reversa
+===================================================== */
 function etapa7(){
   limparTudo();
   clearInterval(respiraInterval);
 
   content.innerHTML=`aviso:<br>nada aqui faz sentido.<br>a curiosidade venceu.`;
 
+  const card = document.querySelector('.card');
   const continuar=document.createElement("button");
   continuar.innerText="continuar";
   const parar=document.createElement("button");
@@ -276,37 +290,92 @@ function etapa7(){
   buttons.appendChild(continuar);
   buttons.appendChild(parar);
 
+  // Bloqueia o botão parar
   parar.onclick=()=>{ beep(200,150); alert("Você não pode clicar aqui"); };
 
   let fugidas=0;
+
+  // Coloca botão relativo ao card
   continuar.style.position="absolute";
   continuar.style.left="50%";
   continuar.style.top="50%";
-  continuar.style.transform="translate(-50%,-50%)";
+  continuar.style.transform = "translate(-50%, -50%)"; // centraliza corretamente
 
-  function mover(){
-    fugidas++;
-    if(fugidas<=6){
-      continuar.style.left=Math.random()*70+"%";
-      continuar.style.top=Math.random()*70+"%";
-    }else{
-      continuar.remove();
-      parar.remove();
-      etapa8();
-    }
+  // Detecta se é touch (celular)
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  // Função que move o botão
+  function moverBotao() {
+      fugidas++;
+      if(fugidas <= 6){
+          const cardRect = card.getBoundingClientRect();
+          const btnWidth = continuar.offsetWidth;
+          const btnHeight = continuar.offsetHeight;
+
+          // Calcula nova posição dentro do card, com margem
+          const padding = 10;
+          const newLeft = Math.random() * (cardRect.width - btnWidth - padding*2) + padding;
+          const newTop  = Math.random() * (cardRect.height - btnHeight - padding*2) + padding;
+
+          continuar.style.left = newLeft + "px";
+          continuar.style.top  = newTop  + "px";
+      } else {
+          // 6ª tentativa
+          continuar.remove();
+          parar.remove();
+          mostrarBalãoDecisao();
+      }
   }
 
-  continuar.onmouseover=mover;
-  continuar.onclick=mover;
+  if(isTouch){
+      continuar.addEventListener("touchstart", (e)=>{
+          e.preventDefault(); // evita clique normal
+          moverBotao();
+      }, {passive:false});
+  } else {
+      continuar.onmouseover = moverBotao;
+  }
 }
+
+// Função que mostra o balão de decisão SIM / NÃO
+function mostrarBalãoDecisao(){
+  content.innerHTML="Já perdeu a paciência.<br>Escolha:";
+  
+  const simBtn=document.createElement("button");
+  simBtn.innerText="Sim";
+  const naoBtn=document.createElement("button");
+  naoBtn.innerText="Não";
+
+  buttons.appendChild(simBtn);
+  buttons.appendChild(naoBtn);
+
+  simBtn.onclick=()=>{ content.innerHTML="sabia."; setButton("ok, terminar logo isso", etapa8); };
+  naoBtn.onclick=()=>{ content.innerHTML="para de mentir pra si mesma"; setButton("ok, terminar logo isso", etapa8); };
+}
+
+/* =====================================================
+   ETAPA 8 
+===================================================== */
 
 function etapa8(){
   limparTudo();
   content.innerHTML="parabéns.<br>você chegou até o final.";
+  setButton("ver conclusão",mostrarShrek);
 }
 
+function mostrarShrek(){
+  document.body.innerHTML=`
+<iframe width="100%" height="100%"
+src="https://www.youtube.com/embed/_2aN_aXrQsw?autoplay=1"
+allow="autoplay; fullscreen"></iframe>`;
+}
+
+/* =====================================================
+   LIMPAR TUDO
+===================================================== */
 function limparTudo(){
   buttons.innerHTML="";
+  document.querySelectorAll(".floating").forEach(e=>e.remove());
   clearInterval(respiraInterval);
 }
 
