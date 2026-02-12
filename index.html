@@ -205,6 +205,15 @@ function pararFinal(){
   audioFinal.currentTime = 0; // 🔥 reseta (evita continuar depois)
 }
 
+const audioAplausos = new Audio("Aplausos.mp3");
+audioAplausos.preload = "auto";
+
+function tocarAplausos(){
+  audioAplausos.currentTime = 0;
+  audioAplausos.play();
+}
+
+  
 /* =====================================================
    AUX
 ===================================================== */
@@ -294,8 +303,8 @@ function etapa1(){
       border-radius:12px;
     ">
     
-    você acabou de escanear um QR Code.<br><br>
-    não tem volta.
+    você acabou de escanear um QR Code babyy.<br><br>
+    e não tem volta.
   `;
 
   setButton("seguir mesmo assim",()=>{
@@ -336,7 +345,7 @@ coletando dados...<br><br>
 function etapa3(){
   limparTudo();
   content.innerHTML=`
-carregando conteúdo de baixa qualidade...<br><br>
+carregando conteúdo de baixíssima qualidade...<br><br>
 <div class="progress"><div class="bar" id="bar"></div></div>
 <div id="percent" style="margin-top:15px;font-size:20px;font-weight:bold">0%</div>
 `;
@@ -518,34 +527,36 @@ function mostrarBalãoDecisao(){
   naoBtn.onclick=()=>{ content.innerHTML="para de mentir pra si mesma"; setButton("ok, terminar logo isso", etapa8); };
   }
   
-
 /* =====================================================
    ETAPA 8 
 ===================================================== */
-
 function etapa8(){
   limparTudo();
-  tocarFinal();   // 🔥 começa a música no clique
+
+  tocarFinal(); // música de fundo
 
   content.innerHTML="parabéns.<br>você chegou até o final.";
 
   setButton("ver conclusão", ()=>{
-    pararFinal(); // 🔥 para a música de fundo
+    pararFinal();
     etapa9();
-    
   });
 }
 
 
+/* =====================================================
+   MOSTRAR VÍDEO
+===================================================== */
 function mostrarShrek(){
 
   limparTudo();
   
   content.innerHTML = `
   <div style="text-align:center">
-    <p style="margin-bottom:15px">tá bom… agora é sério, assite o vídeo 💙</p>
+    <p style="margin-bottom:15px">tá bom… agora é sério, assiste o vídeo 💙</p>
 
     <video 
+      id="videoFinal"
       controls
       preload="auto"
       playsinline
@@ -554,9 +565,14 @@ function mostrarShrek(){
     </video>
   </div>
   `;
+
+  // 👉 quando o vídeo terminar → pedido
+  const video = document.getElementById("videoFinal");
+  video.onended = etapaPedido;
 }
 
-  /* =====================================================
+
+/* =====================================================
    ETAPA 9 – clímax fofo + meme
 ===================================================== */
 function etapa9(){
@@ -567,13 +583,9 @@ function etapa9(){
   só mais um segundo.
   `;
 
-  // 💓 batimento cardíaco
   [0,300,600,900].forEach(t=>setTimeout(batimento,t));
-
-  // 💙 corações
   setTimeout(()=>chuvaCoracoes(30),500);
 
-  // ⚡ glitch + vídeo
   setTimeout(()=>{
     document.body.classList.add("glitch");
     beep(120,120);
@@ -585,6 +597,82 @@ function etapa9(){
 
   },1800);
 }
+
+
+/* =====================================================
+   🎩 PEDIDO FORMAL ANTIGO
+===================================================== */
+function etapaPedido(){
+  limparTudo();
+
+  content.innerHTML = `
+  <div style="text-align:center; font-size:18px; line-height:1.7">
+  Por obséquio, distinta dama...<br><br>
+
+  conceder-me-ias a honra<br>
+  de tua adorável presença<br>
+  em minha humilde morada,<br>
+  para que partilhemos<br>
+  uma refeição deveras saborosa<br>
+  e agradável companhia?<br><br>
+
+  💙
+  </div>
+  `;
+
+  setButton("Sim", etapaCelebracao);
+}
+
+
+/* =====================================================
+   🎆 CELEBRAÇÃO FINAL
+===================================================== */
+function etapaCelebracao(){
+  limparTudo();
+
+  tocarAplausos(); // 🔥 toca som real de aplausos
+  vibrar(300);
+
+  content.innerHTML = `
+  <div style="text-align:center; font-size:30px">
+    🎉 ELA DISSE SIM 🎉<br><br>
+    💙💙💙
+  </div>
+  `;
+
+  chuvaCoracoes(40);
+  fogos(40);
+}
+
+
+/* =====================================================
+   🎆 FOGOS ANIMADOS
+===================================================== */
+function fogos(qtd=30){
+  for(let i=0;i<qtd;i++){
+
+    const f=document.createElement("div");
+    f.innerText="🎆";
+
+    f.style.position="fixed";
+    f.style.left=Math.random()*100+"vw";
+    f.style.top=Math.random()*70+"vh";
+    f.style.fontSize=(22+Math.random()*30)+"px";
+    f.style.opacity=0;
+    f.style.pointerEvents="none";
+    f.style.transition="all 1.2s ease-out";
+
+    document.body.appendChild(f);
+
+    setTimeout(()=>{
+      f.style.opacity=1;
+      f.style.transform="scale(1.6)";
+    },50);
+
+    setTimeout(()=>f.remove(),1200);
+  }
+}
+
 
 /* =====================================================
    LIMPAR TUDO
@@ -598,14 +686,12 @@ function limparTudo(){
   document.querySelectorAll(".floating").forEach(e=>e.remove());
   clearInterval(respiraInterval);
 
-  // 👉 PRIMEIRA TELA: SEM animação nenhuma
   if(primeiraExecucao){
     primeiraExecucao=false;
     card.style.opacity=1;
     return;
   }
 
-  // 👉 outras telas: fade simples
   card.style.opacity=0;
 
   requestAnimationFrame(()=>{
@@ -615,6 +701,3 @@ function limparTudo(){
 
 
 etapa0();
-</script>
-</body>
-</html>
