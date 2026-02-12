@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>carregando surpresa...</title>
-
+  
 <style>
 :root{
   --bg:#0f0f14;
@@ -29,7 +29,7 @@ body{
   max-width:520px;
   position:relative;
   z-index:1;
-  transition:opacity .25s ease; /* <<< fade suave entre etapas */
+  transition:opacity .25s ease; /* fade suave entre etapas */
 }
 
 button{
@@ -69,14 +69,34 @@ button{
   pointer-events:none;
   z-index:-1; /* atrás do card */
 }
+
+
+/* =========================================
+   ⚡ GLITCH (ANTES DO VÍDEO FINAL)
+   FICA DENTRO DO STYLE
+========================================= */
+
+.glitch{
+  animation: glitch .15s infinite;
+}
+
+@keyframes glitch{
+  0%{transform:translate(2px,-2px)}
+  25%{transform:translate(-2px,2px)}
+  50%{transform:translate(2px,2px)}
+  75%{transform:translate(-2px,-2px)}
+  100%{transform:translate(0,0)}
+}
+
 </style>
-</head>
+
 
 <body>
 <div class="card">
   <div id="content"></div>
   <div id="buttons"></div>
 </div>
+
 
 <script>
 const content = document.getElementById("content");
@@ -148,6 +168,37 @@ function setButton(text,fn){
   buttons.appendChild(b);
 }
 
+/* =====================================================
+   💙 EFEITOS VISUAIS EXTRAS
+===================================================== */
+
+function batimento(){
+  vibrar(60);
+  setTimeout(()=>vibrar(40),120);
+}
+
+function chuvaCoracoes(qtd=25){
+  for(let i=0;i<qtd;i++){
+    const h=document.createElement("div");
+    h.innerText="💙";
+    h.style.position="fixed";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="-20px";
+    h.style.fontSize=(18+Math.random()*26)+"px";
+    h.style.opacity=.9;
+    h.style.transition="transform 3s linear, opacity 3s";
+    h.style.pointerEvents="none";
+    document.body.appendChild(h);
+
+    setTimeout(()=>{
+      h.style.transform="translateY(-120vh)";
+      h.style.opacity=0;
+    },50);
+
+    setTimeout(()=>h.remove(),3000);
+  }
+}
+  
 /* =====================================================
    ETAPA 0
 ===================================================== */
@@ -380,7 +431,8 @@ function mostrarBalãoDecisao(){
 function etapa8(){
   limparTudo();
   content.innerHTML="parabéns.<br>você chegou até o final.";
-  setButton("ver conclusão",mostrarShrek);
+  setButton("ver conclusão",etapa9);
+;
 }
 
 function mostrarShrek(){
@@ -407,19 +459,58 @@ beep(500,120);
   }, 3000); // 3 segundos
 }
 
+  /* =====================================================
+   ETAPA 9 – clímax fofo + meme
+===================================================== */
+function etapa9(){
+  limparTudo();
+
+  content.innerHTML=`
+  espera...<br><br>
+  só mais um segundo.
+  `;
+
+  // 💓 batimento cardíaco
+  batimento();
+  setTimeout(batimento,400);
+  setTimeout(batimento,800);
+
+  // 💙 corações
+  setTimeout(()=>chuvaCoracoes(30),500);
+
+  // ⚡ glitch + vídeo
+  setTimeout(()=>{
+    document.body.classList.add("glitch");
+    beep(120,120);
+
+    setTimeout(()=>{
+      document.body.classList.remove("glitch");
+      mostrarShrek();
+    },350);
+
+  },1800);
+}
+
 /* =====================================================
    LIMPAR TUDO
 ===================================================== */
+let primeiraExecucao = true;
+
 function limparTudo(){
   const card=document.querySelector('.card');
-  card.style.opacity=0;
+
+  if(!primeiraExecucao){
+    card.style.opacity=0;
+  }
 
   setTimeout(()=>{
     buttons.innerHTML="";
     document.querySelectorAll(".floating").forEach(e=>e.remove());
     clearInterval(respiraInterval);
+
     card.style.opacity=1;
-  },120);
+    primeiraExecucao = false;
+  }, primeiraExecucao ? 0 : 120);
 }
 
 etapa0();
