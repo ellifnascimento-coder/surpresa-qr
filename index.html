@@ -348,14 +348,24 @@ vibrar(300);
 ===================================================== */
 function etapa5(){
   limparTudo();
+
   content.innerHTML=`
-isso NÃO é um flerte.<br>
-talvez seja.<br>
-depende do ponto de vista.<br>
-dos astros.<br>
-e do seu humor hoje.<br>
-`;
+    <img src="Flerte.png" style="
+      width:180px;
+      display:block;
+      margin:0 auto 20px;
+      border-radius:12px;
+    ">
+
+    isso NÃO é um flerte.<br>
+    talvez seja.<br>
+    depende do ponto de vista.<br>
+    dos astros.<br>
+    e do seu humor hoje.<br>
+  `;
+
   setTimeout(()=>iniciarLoopMusica(),100);
+
   setButton("ok mas quero ver",()=>{
     pararMusica();
     etapa6();
