@@ -499,19 +499,25 @@ let primeiraExecucao = true;
 function limparTudo(){
   const card=document.querySelector('.card');
 
-  if(!primeiraExecucao){
-    card.style.opacity=0;
+  buttons.innerHTML="";
+  document.querySelectorAll(".floating").forEach(e=>e.remove());
+  clearInterval(respiraInterval);
+
+  // SEM fade na primeira tela
+  if(primeiraExecucao){
+    card.style.opacity = 1;
+    primeiraExecucao = false;
+    return;
   }
 
-  setTimeout(()=>{
-    buttons.innerHTML="";
-    document.querySelectorAll(".floating").forEach(e=>e.remove());
-    clearInterval(respiraInterval);
+  // fade só nas próximas etapas
+  card.style.opacity = 0;
 
-    card.style.opacity=1;
-    primeiraExecucao = false;
-  }, primeiraExecucao ? 0 : 120);
+  setTimeout(()=>{
+    card.style.opacity = 1;
+  },120);
 }
+
 
 etapa0();
 </script>
