@@ -204,18 +204,27 @@ function etapa1(){
   setButton("seguir mesmo assim",()=>{ stop1(); etapa2(); });
 }
 
-// ETAPA 2
+/* =====================================================
+   ETAPA 2
+===================================================== */
 function etapa2(){
   limparTudo();
-  content.innerHTML=`coletando dados...<br><br>
+  content.innerHTML=`
+coletando dados...<br><br>
 <span id="s">surpresa: ...</span><br>
 <span id="c">confusão: ...</span><br>
-<span id="j">julgamento silencioso: ...</span>`;
+<span id="j">julgamento silencioso: ...</span>
+`;
   setButton("prosseguir",etapa3);
+
   const s=document.getElementById("s");
   const c=document.getElementById("c");
   const j=document.getElementById("j");
-  function revelar(el,texto,delay,freq){ setTimeout(()=>{ el.innerText=texto; beep(freq,120); },delay); }
+
+  function revelar(el,texto,delay,freq){
+    setTimeout(()=>{ el.innerText=texto; beep(freq,120); },delay);
+  }
+
   revelar(s,"surpresa: OK",600,900);
   revelar(c,"confusão: OK",1400,650);
   revelar(j,"julgamento silencioso: PROVÁVEL",2200,450);
