@@ -232,21 +232,41 @@ function limparTudo(){
 }
 
 // =====================================================
-// ETAPAS 0 → 8 (Código 1)
+// ETAPAS
 // =====================================================
-function etapa0(){ limparTudo(); content.innerHTML=`⚠️<br><br>aumente o volume do celular<br>para a experiência perfeita`; setButton("ok",()=>{ play1(); etapa1(); }); }
-function etapa1(){ limparTudo(); content.innerHTML=`você acabou de escanear um QR Code.<br><br>não tem volta.`; setButton("seguir mesmo assim",()=>{ stop1(); etapa2(); }); }
+function etapa0(){ 
+  limparTudo(); 
+  content.innerHTML=`⚠️<br><br>aumente o volume do celular<br>para a experiência perfeita`; 
+  setButton("ok",()=>{ play1(); etapa1(); }); 
+}
+
+function etapa1(){ 
+  limparTudo(); 
+  content.innerHTML=`
+    <img src="Gatinho.png" style="width:180px; display:block; margin:0 auto 20px; border-radius:12px;">
+    você acabou de escanear um QR Code babyy.<br><br>
+    e não tem volta.
+  `; 
+  setButton("seguir mesmo assim",()=>{ stop1(); etapa2(); }); 
+}
+
 function etapa2(){
   limparTudo();
-  content.innerHTML=`coletando dados...<br><br><span id="s">surpresa: ...</span><br><span id="c">confusão: ...</span><br><span id="j">julgamento silencioso: ...</span>`;
+  content.innerHTML=`coletando dados...<br><br>
+  <span id="s">surpresa: ...</span><br>
+  <span id="c">confusão: ...</span><br>
+  <span id="j">julgamento silencioso: ...</span>`;
   setButton("prosseguir",etapa3);
   const s=document.getElementById("s"), c=document.getElementById("c"), j=document.getElementById("j");
   function revelar(el,texto,delay,freq){ setTimeout(()=>{ el.innerText=texto; beep(freq,120); },delay); }
   revelar(s,"surpresa: OK",600,900); revelar(c,"confusão: OK",1400,650); revelar(j,"julgamento silencioso: PROVÁVEL",2200,450);
 }
+
 function etapa3(){
   limparTudo();
-  content.innerHTML=`carregando conteúdo de baixa qualidade...<br><br><div class="progress"><div class="bar" id="bar"></div></div><div id="percent" style="margin-top:15px;font-size:20px;font-weight:bold">0%</div>`;
+  content.innerHTML=`carregando conteúdo de baixíssima qualidade...<br><br>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div id="percent" style="margin-top:15px;font-size:20px;font-weight:bold">0%</div>`;
   const bar=document.getElementById("bar"), percent=document.getElementById("percent");
   let width=0;
   const interval=setInterval(()=>{
@@ -254,18 +274,40 @@ function etapa3(){
     if(width>=100){ clearInterval(interval); percent.textContent="100% ✓"; setButton("aceitar termos que não li",etapa4); }
   },20);
 }
+
 function etapa4(){
   limparTudo();
-  content.innerHTML=`<div class="error">ERROS FATAIS DETECTADOS\n\n[FAIL] QR Code em flores\n[FAIL] essa página existir\n[CRITICAL] você ainda aqui\n\nSistema instável.\nRecomendado: fechar o navegador.</div>`;
+  content.innerHTML=`<div class="error">
+ERROS FATAIS DETECTADOS
+
+[FAIL] QR Code em flores
+[FAIL] essa página existir
+[CRITICAL] você ainda aqui
+
+Sistema instável.
+Recomendado: fechar o navegador.
+  </div>`;
   errorNoise();
   setButton("continuar por curiosidade",etapa5);
 }
+
 function etapa5(){
   limparTudo();
-  content.innerHTML=`isso NÃO é um flerte.<br>talvez seja.<br>depende do ponto de vista.<br>dos astros.<br>e do seu humor hoje.<br>`;
+  content.innerHTML=`
+    <img src="Flerte.png" style="width:180px; display:block; margin:0 auto 20px; border-radius:12px;">
+    isso NÃO é um flerte.<br>
+    talvez seja.<br>
+    depende do ponto de vista.<br>
+    dos astros.<br>
+    e do seu humor hoje.<br>
+  `;
   setTimeout(()=>iniciarLoopMusica(),100);
   setButton("ok mas quero ver",()=>{ pararMusica(); etapa6(); });
 }
+
+// =====================================================
+// ETAPA 6 – respiração + textos flutuantes
+// =====================================================
 function etapa6(){
   limparTudo();
   content.innerHTML=`PAUSA OBRIGATÓRIA.<br><br><span id="respira" style="font-size:22px;opacity:.8">inspira…</span>`;
@@ -285,30 +327,80 @@ function etapa6(){
   }
   setButton("fingir que não li e continuar", etapa7);
 }
+
+// =====================================================
+// ETAPA 7 – psicologia reversa (versão corrigida por você)
+// =====================================================
 function etapa7(){
-  limparTudo(); clearInterval(respiraInterval);
+  limparTudo();
+  clearInterval(respiraInterval);
+
   content.innerHTML=`aviso:<br>nada aqui faz sentido.<br>a curiosidade venceu.`;
-  const card=document.querySelector('.card');
-  const continuar=document.createElement("button"); continuar.innerText="continuar";
-  const parar=document.createElement("button"); parar.innerText="parar";
-  buttons.appendChild(continuar); buttons.appendChild(parar);
+
+  const card = document.querySelector('.card');
+  const continuar=document.createElement("button");
+  continuar.innerText="continuar";
+  const parar=document.createElement("button");
+  parar.innerText="parar";
+  buttons.appendChild(continuar);
+  buttons.appendChild(parar);
+
+  // Bloqueia o botão parar
   parar.onclick=()=>{ beep(200,150); alert("Você não pode clicar aqui"); };
+
   let fugidas=0;
-  continuar.style.position="absolute"; continuar.style.left="50%"; continuar.style.top="50%"; continuar.style.transform="translate(-50%, -50%)";
-  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints>0;
-  function moverBotao(){ fugidas++; if(fugidas<=6){ const cardRect=card.getBoundingClientRect(); const btnWidth=continuar.offsetWidth; const btnHeight=continuar.offsetHeight; const padding=10;
-    continuar.style.left=Math.random()*(cardRect.width-btnWidth-padding*2)+padding; continuar.style.top=Math.random()*(cardRect.height-btnHeight-padding*2)+padding;
-  } else { continuar.remove(); parar.remove(); mostrarBalãoDecisao(); } }
-  if(isTouch){ continuar.addEventListener("touchstart", e=>{ e.preventDefault(); moverBotao(); },{passive:false}); } else { continuar.onmouseover=moverBotao; }
+
+  // Coloca botão relativo ao card
+  continuar.style.position="absolute";
+  continuar.style.left="50%";
+  continuar.style.top="50%";
+  continuar.style.transform = "translate(-50%, -50%)"; // centraliza corretamente
+
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  function moverBotao() {
+      fugidas++;
+      if(fugidas <= 6){
+          const cardRect = card.getBoundingClientRect();
+          const btnWidth = continuar.offsetWidth;
+          const btnHeight = continuar.offsetHeight;
+          const padding = 10;
+          const newLeft = Math.random() * (cardRect.width - btnWidth - padding*2) + padding;
+          const newTop  = Math.random() * (cardRect.height - btnHeight - padding*2) + padding;
+          continuar.style.left = newLeft + "px";
+          continuar.style.top  = newTop  + "px";
+      } else {
+          continuar.remove();
+          parar.remove();
+          mostrarBalãoDecisao();
+      }
+  }
+
+  if(isTouch){
+      continuar.addEventListener("touchstart", (e)=>{ e.preventDefault(); moverBotao(); }, {passive:false});
+  } else {
+      continuar.onmouseover = moverBotao;
+  }
 }
+
 function mostrarBalãoDecisao(){
-  content.innerHTML="Já perdeu a paciência?<br><br>";
-  const simBtn=document.createElement("button"); simBtn.innerText="Sim";
-  const naoBtn=document.createElement("button"); naoBtn.innerText="Não";
-  buttons.appendChild(simBtn); buttons.appendChild(naoBtn);
+  content.innerHTML="Já perdeu a paciência?<br>Escolha:";
+
+  const simBtn=document.createElement("button");
+  simBtn.innerText="Sim";
+  const naoBtn=document.createElement("button");
+  naoBtn.innerText="Não";
+
+  buttons.appendChild(simBtn);
+  buttons.appendChild(naoBtn);
+
   simBtn.onclick=()=>{ content.innerHTML="sabia."; setButton("ok, terminar logo isso", etapa8); };
   naoBtn.onclick=()=>{ content.innerHTML="para de mentir pra si mesma"; setButton("ok, terminar logo isso", etapa8); };
 }
+
+// =====================================================
+// ETAPA 8
+// =====================================================
 function etapa8(){
   limparTudo();
   tocarFinal();
